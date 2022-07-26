@@ -1,0 +1,88 @@
+<section >
+    <div >
+
+        <table class="container table m-5">
+            <thead>
+                <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Actions</th>
+                    <th scope="col">INR</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each products}}
+                <tr>
+
+                    <td><img style="width: 70px;height:70px" src="/product-images/{{this.product._id}}.jpg" alt=""></td>
+                    <td>{{this.product.Name}}</td>
+
+
+
+                    <td>
+                        <button class="btn cart-item-count mr-5 btn-success"
+                            onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user}}',-1)">-</button>
+                        <span id="{{this.product._id}}">{{this.quantity}}</span>
+                        <button class="btn cart-item-count mr-5 btn-success"
+                            onclick="changeQuantity('{{this._id}}','{{this.product._id}}','{{../user}}',1)">+</button>
+                    </td>
+                    <td>
+                        <a href="" class="btn btn-danger">Remove</a>
+
+                    </td>
+                    <td>₹ {{this.product.Price}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <hr>
+        <div class="container" style="padding-left: 65%;">
+            <h5 style="margin-left:15px; color:cornsilk">Total: ₹ <span id="total">{{totalValue}}</span></h5><br>
+            <a href="/place-order" class="btn btn-success"
+                style="margin-left:-5px;margin-bottom:10px;padding:15px;width:80%;"><b>Place Order</b></a>
+        </div>
+        </hr>
+    </div>
+</section>
+
+<style>
+    body{
+        background: #156469
+    }
+
+    th,tr{
+        color: cornsilk;
+    }
+</style>
+
+<script>
+    function changeQuantity(cartId, proId, userId, count) {
+        let quantity = parseInt(document.getElementById(proId).innerHTML)
+        count = parseInt(count)
+        console.log(userId)
+
+        $.ajax({
+            url: '/change-product-quantity',
+            data: {
+                user:userId,
+                cart: cartId,
+                product: proId,
+                count: count,
+                quantity: quantity
+            },
+            method: 'post',
+            success: (response) => {
+                if (response.removeProduct) {
+                    alert('product removed from cart')
+
+                    location.reload()
+                } else {
+                    console.log(response)
+                    document.getElementById(proId).innerHTML = quantity + count
+                    document.getElementById('total').innerHTML = response . total
+                }
+            }
+        })
+    }
+</script>
